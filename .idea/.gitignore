@@ -1,3 +1,33 @@
 # Default ignored files
 /shelf/
 /workspace.xml
+
+# IntelliJ project files
+.idea/
+*.iml
+
+# Build output
+/dist/
+target/
+build/
+out/
+bin/
+build.xml
+nbproject/private/
+nbbuild/
+
+# Codename One specific
+codenameone_settings.properties
+codenameone_settings/
+native/
+libs/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Package-locks and metadata
+node_modules/
