@@ -5,44 +5,28 @@ import com.codename1.ui.*;
 import com.codename1.ui.layouts.*;
 import com.codename1.io.*;
 import com.codename1.components.SpanLabel;
-
+import com.codename1.ui.plaf.UIManager;
+import com.codename1.ui.util.Resources;
 
 public class HabtApp extends Lifecycle {
     @Override
     public void runApp() {
+        UIManager.initFirstTheme("/theme"); // Loads CSS theme
 
         Form hi = new Form("HABT", BoxLayout.y());
-        hi.add(quoteOfDay());
-        hi.add(getDaySinceRegistrationLabel());
+        Container content = new Container(BoxLayout.y());
+        content.setScrollableY(true);
+        content.add(quoteOfDay());
+        content.add(getDaySinceRegistrationLabel());
+        hi.add(content);
 
         hi.getToolbar().addMaterialCommandToSideMenu("Home", FontImage.MATERIAL_CHECK, 4, e -> hello());
-        hi.getToolbar().addMaterialCommandToSideMenu("Calendar", FontImage.MATERIAL_CHECK, 4, e -> showCalendarForm());
+        hi.getToolbar().addMaterialCommandToSideMenu("Calendar", FontImage.MATERIAL_CALENDAR_TODAY, 4, e -> showCalendarForm(hi));
 
         hi.show();
     }
 
-
-    private void showCalendarForm() {
-        Form calendar = new Form("Calendar", BoxLayout.y()); // Creates a new form for calendar
-
-        //Add Back button
-        calendar.getToolbar().addMaterialCommandToLeftBar("", FontImage.MATERIAL_ARROW_BACK, e -> {
-            Form hi = new Form("HABT", BoxLayout.y());
-            hi.add(quoteOfDay());
-            hi.add(getDaySinceRegistrationLabel());
-            String stored = Preferences.get("registrationDate", null);
-            Toolbar tb = hi.getToolbar();
-            tb.addMaterialCommandToSideMenu("Home",
-                    FontImage.MATERIAL_CHECK, 4, evt -> hello());
-            tb.addMaterialCommandToSideMenu("Calendar",
-                    FontImage.MATERIAL_CALENDAR_TODAY, 4, evt -> showCalendarForm());
-            hi.showBack();
-        });
-        calendar.show(); // Show calendar page
-
-    }
-
-    private Label quoteOfDay() {
+    private Container quoteOfDay() {
         String[] inspirationalQuotes = {
                 "The secret of change is to focus all of your energy, not on fighting the old, but on building the new.",
                 "You don’t have to be perfect to start, but you have to start to be great.",
@@ -59,10 +43,18 @@ public class HabtApp extends Lifecycle {
                 "Success is the sum of small efforts, repeated day in and day out.",
                 "Break the habit today, or it will break you tomorrow."
         };
+
         int randomIndex = new java.util.Random().nextInt(inspirationalQuotes.length);
         String quote = inspirationalQuotes[randomIndex];
         SpanLabel quoteLabel = new SpanLabel(quote);
-        return new Label(quote);
+        quoteLabel.setUIID("QuoteLabel");
+        quoteLabel.setTextUIID("CenterLabel");
+
+        Container quoteContainer = new Container(new FlowLayout(Component.CENTER));
+        quoteContainer.setUIID("QuoteContainer");
+        quoteContainer.add(quoteLabel);
+
+        return quoteContainer;
     }
 
     private Label getDaySinceRegistrationLabel() {
@@ -78,21 +70,37 @@ public class HabtApp extends Lifecycle {
         long millisPerDay = 1000L * 60 * 60 * 24;
         long daysPassed = (nowMillis - regMillis) / millisPerDay + 1;
 
-        return new Label("Day " + daysPassed);
+        Label dayLabel = new Label("Day " + daysPassed);
+        dayLabel.setUIID("DayLabel");
+        return dayLabel;
     }
 
+    private void showCalendarForm(Form previousForm) {
+        Form calendar = new Form("Calendar", BoxLayout.y());
+        calendar.add(new Label("Calendar View Coming Soon"));
+
+        calendar.getToolbar().addMaterialCommandToLeftBar("", FontImage.MATERIAL_ARROW_BACK, e -> {
+            if (previousForm != null) {
+                previousForm.showBack();
+            }
+        });
+
+        calendar.show();
+    }
 
     private void hello() {
+        Form currentForm = Display.getInstance().getCurrent();
         Dialog dialog = new Dialog("Welcome to HABT");
         dialog.setLayout(new BorderLayout());
         dialog.add(BorderLayout.CENTER, new Label("Lets get started!"));
+
         Button toCalendar = new Button("Getting Started");
         toCalendar.addActionListener(evt -> {
             dialog.dispose();
-            showCalendarForm();
+            showCalendarForm(currentForm);
         });
+
         dialog.add(BorderLayout.SOUTH, toCalendar);
         dialog.show();
     }
-
 }
