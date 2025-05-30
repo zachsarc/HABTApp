@@ -1,22 +1,48 @@
 package com.habt.myapp;
 
-import static com.codename1.ui.CN.*;
 import com.codename1.system.Lifecycle;
 import com.codename1.ui.*;
 import com.codename1.ui.layouts.*;
 import com.codename1.io.*;
-import com.codename1.ui.plaf.*;
-import com.codename1.ui.util.Resources;
 import com.codename1.components.SpanLabel;
-import com.codename1.io.Preferences.*;
-import jdk.internal.access.JavaIOFileDescriptorAccess;
-
-import java.util.Date;
 
 
 public class HabtApp extends Lifecycle {
     @Override
     public void runApp() {
+
+        Form hi = new Form("HABT", BoxLayout.y());
+        hi.add(quoteOfDay());
+        hi.add(getDaySinceRegistrationLabel());
+
+        hi.getToolbar().addMaterialCommandToSideMenu("Home", FontImage.MATERIAL_CHECK, 4, e -> hello());
+        hi.getToolbar().addMaterialCommandToSideMenu("Calendar", FontImage.MATERIAL_CHECK, 4, e -> showCalendarForm());
+
+        hi.show();
+    }
+
+
+    private void showCalendarForm() {
+        Form calendar = new Form("Calendar", BoxLayout.y()); // Creates a new form for calendar
+
+        //Add Back button
+        calendar.getToolbar().addMaterialCommandToLeftBar("", FontImage.MATERIAL_ARROW_BACK, e -> {
+            Form hi = new Form("HABT", BoxLayout.y());
+            hi.add(quoteOfDay());
+            hi.add(getDaySinceRegistrationLabel());
+            String stored = Preferences.get("registrationDate", null);
+            Toolbar tb = hi.getToolbar();
+            tb.addMaterialCommandToSideMenu("Home",
+                    FontImage.MATERIAL_CHECK, 4, evt -> hello());
+            tb.addMaterialCommandToSideMenu("Calendar",
+                    FontImage.MATERIAL_CALENDAR_TODAY, 4, evt -> showCalendarForm());
+            hi.showBack();
+        });
+        calendar.show(); // Show calendar page
+
+    }
+
+    private Label quoteOfDay() {
         String[] inspirationalQuotes = {
                 "The secret of change is to focus all of your energy, not on fighting the old, but on building the new.",
                 "You don’t have to be perfect to start, but you have to start to be great.",
@@ -33,41 +59,10 @@ public class HabtApp extends Lifecycle {
                 "Success is the sum of small efforts, repeated day in and day out.",
                 "Break the habit today, or it will break you tomorrow."
         };
-
-        Form hi = new Form("HABT", BoxLayout.y());
-
         int randomIndex = new java.util.Random().nextInt(inspirationalQuotes.length);
         String quote = inspirationalQuotes[randomIndex];
-
-        SpanLabel quoteLabel = new SpanLabel(quote); // ✅ Correct usage
-        hi.add(quoteLabel);
-        hi.add(getDaySinceRegistrationLabel());
-
-        hi.getToolbar().addMaterialCommandToSideMenu("Hello Command", FontImage.MATERIAL_CHECK, 4, e -> hello());
-        hi.getToolbar().addMaterialCommandToSideMenu("Calendar", FontImage.MATERIAL_CHECK, 4, e -> showCalendarForm());
-
-        hi.show();
-    }
-
-
-
-    private void showCalendarForm() {
-        Form calendar = new Form("Calendar", BoxLayout.y()); // Creates a new form for calendar
-
-        //Add Back button
-        calendar.getToolbar().addMaterialCommandToLeftBar("", FontImage.MATERIAL_ARROW_BACK, e -> {
-            Form hi = new Form("HABT", BoxLayout.y());
-            hi.add(getDaySinceRegistrationLabel());
-            String stored = Preferences.get("registrationDate", null);
-            Toolbar tb = hi.getToolbar();
-            tb.addMaterialCommandToSideMenu("Habits to Break!",
-                    FontImage.MATERIAL_CHECK, 4, evt -> hello());
-            tb.addMaterialCommandToSideMenu("Calendar",
-                    FontImage.MATERIAL_CALENDAR_TODAY, 4, evt -> showCalendarForm());
-            hi.showBack();
-        });
-        calendar.show(); // Show calendar page
-
+        SpanLabel quoteLabel = new SpanLabel(quote);
+        return new Label(quote);
     }
 
     private Label getDaySinceRegistrationLabel() {
