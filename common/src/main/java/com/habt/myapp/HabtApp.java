@@ -57,7 +57,7 @@ public class HabtApp extends Lifecycle {
         return quoteContainer;
     }
 
-    private Label getDaySinceRegistrationLabel() {
+    private Container getDaySinceRegistrationLabel() {
         String stored = Preferences.get("registrationDate", null);
 
         if (stored == null) {
@@ -72,8 +72,12 @@ public class HabtApp extends Lifecycle {
 
         Label dayLabel = new Label("Day " + daysPassed);
         dayLabel.setUIID("DayLabel");
-        return dayLabel;
+
+        Container dayContainer = new Container(new FlowLayout(Component.CENTER));
+        dayContainer.add(dayLabel);
+        return dayContainer;
     }
+
 
     private void showCalendarForm(Form previousForm) {
         Form calendar = new Form("Calendar", BoxLayout.y());
