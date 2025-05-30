@@ -67,7 +67,6 @@ public class HabtApp extends Lifecycle {
     }
 
     private void hello() {
-        Dialog.show("Hello Codename One", "Welcome to Codename One", "OK", null);
         Dialog dialog = new Dialog("Welcome to HABT");
         dialog.setLayout(new BorderLayout());
         dialog.add(BorderLayout.CENTER, new Label("Lets get started!"));
