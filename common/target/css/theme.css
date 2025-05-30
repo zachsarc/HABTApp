@@ -1,5 +1,5 @@
 
-/* C:\Users\laric\IdeaProjects\habtapp\javase\..\common\src\main\css\theme.css */
+/* /Users/goonsgrave/IdeaProjects/HABTApp/javase/../common/src/main/css/theme.css */
 /** Define Theme Constants here */
 #Constants {
     includeNativeBool: true;
@@ -18,6 +18,8 @@ Button {
 Title {
     font-family: "native:MainLight";
     font-size: 6mm;
+    color: #92a5de;
+    font-weight: bold;
 }
 
 /** Style for Dialog body */
@@ -56,4 +58,4 @@ SideCommand {
     font-size: 4mm;
     border-bottom: 2px solid #cccccc;
 }
-/* end C:\Users\laric\IdeaProjects\habtapp\javase\..\common\src\main\css\theme.css*/
+/* end /Users/goonsgrave/IdeaProjects/HABTApp/javase/../common/src/main/css/theme.css*/

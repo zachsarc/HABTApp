@@ -14,13 +14,15 @@ Button {
 
 /** Style for App Title Bar Text */
 Title {
-    font-family: "native:MainLight";
+    font-family: "native:MainLight", serif;
     font-size: 6mm;
+    color: #92a5de;
+    font-weight: bold;
 }
 
 /** Style for Dialog body */
 DialogBody {
-    font-family: "native:MainLight";
+    font-family: "native:MainLight", serif;
     font-size: 2.8mm;
 }
 
