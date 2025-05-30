@@ -1,5 +1,3 @@
-
-/* /Users/goonsgrave/IdeaProjects/HABTApp/common/src/main/css/theme.css */
 /** Define Theme Constants here */
 #Constants {
     includeNativeBool: true;
@@ -58,4 +56,3 @@ SideCommand {
     font-size: 4mm;
     border-bottom: 2px solid #cccccc;
 }
-/* end /Users/goonsgrave/IdeaProjects/HABTApp/common/src/main/css/theme.css*/
