@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maven-antrun-" default="install-cn1">
+  <target name="install-cn1">
+    <available file="C:\Users\laric/.codenameone/guibuilder.jar" property="codenameone.present" />
+    <mkdir dir="C:\Users\laric/.codenameone" />
+    <mkdir dir="C:\Users\laric\IdeaProjects\habtapp\common\target/codenameone/tmpProject" />
+    <get skipexisting="true" src="https://www.codenameone.com/files/updates/UpdateCodenameOne.jar" dest="C:\Users\laric/UpdateCodenameOne.jar" />
+    <java fork="true" jar="C:\Users\laric/UpdateCodenameOne.jar">
+      <arg value="C:\Users\laric\IdeaProjects\habtapp\common\target/codenameone/tmpProject" />
+      <arg value="force" />
+    </java>
+  </target>
+</project>
