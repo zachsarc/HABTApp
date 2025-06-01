@@ -1,83 +1,112 @@
 
-/* /Users/pyr/IdeaProjects/HABTApp/javase/../common/src/main/css/theme.css */
-/** Define Theme Constants here */
-#Constants {
-    includeNativeBool: true;
-    defaultSourceDPIInt: "0";
+/* /Users/goonsgrave/IdeaProjects/HABTApp/common/src/main/css/theme.css */
+/* ------------------------------------------------------------
+   theme.css for HabtApp
+   Place this file under src/theme/ (or the folder where
+   your “/theme” resources live). Then call
+       UIManager.initFirstTheme("/theme");
+   in runApp() to load these styles.
+   ------------------------------------------------------------ */
+
+/* Styles the Login form itself */
+LoginForm {
+    background-color: #f5f5f5;
 }
 
-/** Style for Button class */
-Button {
-    font-family: "native:MainLight";
-    font-size: 3mm;
-    border: 6px solid red;
-    border-radius: 2mm;
-}
-
-/** Style for App Title Bar Text */
-Title {
-    font-family: "native:MainLight", serif;
-    font-size: 6mm;
-    color: #92a5de;
-    font-weight: bold;
-}
-
-/** Style for Dialog body */
-DialogBody {
-    font-family: "native:MainLight", serif;
-    font-size: 2.8mm;
-}
-
-/** Style for Dialog title bar text */
-DialogTitle {
-    font-family: "native:MainLight";
-    font-size: 4.5mm;
-}
-
-/** Style for the side menu */
-SideNavigationPanel {
-    background: white;
-    padding: 2mm 1mm 1mm 1mm;
-}
-
-@media platform-ios {
-    /** iOS Only styles for side menu. */
-    SideNavigationPanel {
-        /** Extra top padding to deal with notch on iPhoneX */
-        padding: 6mm 1mm 1mm 1mm;
-    }
-}
-
-/** Style for commands in side menu. */
-SideCommand {
-    padding: 1mm;
-    border: none;
-    text-decoration: none;
-    color: black;
-    font-family: "native:MainLight";
+/* Text fields on the login screen */
+LoginField {
+    margin: 5mm 5mm 5mm 5mm;
+    padding: 2mm;
+    border-radius: 5mm;
+    border: 1px solid #CCCCCC;
+    background-color: #FFFFFF;
+    color: #333333;
     font-size: 4mm;
-    border-bottom: 2px solid #cccccc;
 }
 
-.QuoteLabel {
-    text-align: center;
-    color: #1565C0;
-    font-size: 18px;
-    font-weight: 500;
-    padding: 10px;
+/* Error label (in red) */
+ErrorLabel {
+    color: #D32F2F;
+    margin: 2mm 0mm 2mm 0mm;
+    font-style: italic;
+    font-size: 3.5mm;
 }
 
-.QuoteContainer {
-    background-color: #EAF4FE;
-    border-radius: 12px;
-    padding: 16px;
-    margin: 16px auto;
-    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.1);
+/* Login button */
+LoginButton {
+    background-color: #007AFF;
+    color: #FFFFFF;
+    font-size: 5mm;
+    border-radius: 3mm;
+    margin: 5mm 10mm 5mm 10mm;
+    padding: 3mm 5mm;
 }
 
-.DayLabel {
-    color: #0D47A1;
-    font-size: 16px;
-    font-weight: bold;
+/* Title on the Account page */
+Title {
+    font-size: 6mm;
+    color: #333333;
+    margin: 5mm 0mm 5mm 0mm;
+    alignment: center;
 }
-/* end /Users/pyr/IdeaProjects/HABTApp/javase/../common/src/main/css/theme.css*/
+
+/* SpanLabel on the Account page */
+AccountInfo {
+    font-size: 4mm;
+    color: #555555;
+    margin: 4mm 2mm 4mm 2mm;
+    line-spacing: 2mm;
+}
+
+/* Log Out button */
+LogoutButton {
+    background-color: #FF3B30;
+    color: #FFFFFF;
+    font-size: 5mm;
+    border-radius: 3mm;
+    margin: 5mm 10mm 5mm 10mm;
+    padding: 3mm 5mm;
+}
+
+/* Quote of the Day label text */
+QuoteLabel {
+    font-style: italic;
+    font-size: 4mm;
+    color: #444444;
+}
+
+/* Ensures quote text is centered */
+CenterLabel {
+    alignment: center;
+}
+
+/* Container around the quote (gives a light background) */
+QuoteContainer {
+    padding: 3mm;
+    margin: 4mm 4mm 4mm 4mm;
+    background-color: #E0F7FA;
+    border-radius: 4mm;
+}
+
+/* “Day X” label styling */
+DayLabel {
+    font-size: 5mm;
+    color: #00695C;
+    margin: 4mm 0mm 4mm 0mm;
+    alignment: center;
+}
+
+/* (Optional) You can style the Tabs titles here */
+Tabs {
+    padding: 2mm 0mm 2mm 0mm;
+    background-color: #FFFFFF;
+}
+
+/* Style for each Tab’s title when selected/unselected */
+TabsTab {
+    color: #888888;
+    font-size: 4mm;
+    padding: 2mm 4mm;
+}
+
+/* end /Users/goonsgrave/IdeaProjects/HABTApp/common/src/main/css/theme.css*/
