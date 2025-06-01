@@ -1,21 +1,38 @@
 package com.habt.myapp;
 
+import com.codename1.io.ConnectionRequest;
+import com.codename1.io.NetworkManager;
 import com.codename1.io.Preferences;
+import com.codename1.io.JSONParser;
+import java.io.InputStreamReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Map;
 import com.codename1.system.Lifecycle;
 import com.codename1.ui.*;
-import com.codename1.ui.layouts.*;
+import com.codename1.ui.layouts.BorderLayout;
+import com.codename1.ui.layouts.BoxLayout;
+import com.codename1.ui.layouts.FlowLayout;
 import com.codename1.components.SpanLabel;
 import com.codename1.ui.plaf.UIManager;
-import com.codename1.ui.util.Resources;
+import com.codename1.ui.Dialog;
+import com.codename1.ui.Display;
+import java.util.Properties;
+import java.io.InputStream;
 
 public class HabtApp extends Lifecycle {
 
+    // Replace with your actual Firebase Web API key
+    private static String FIREBASE_API_KEY = null;
+
     @Override
     public void runApp() {
+        FIREBASE_API_KEY = Display.getInstance().getProperty("firebase.api.key", "");
+        if(FIREBASE_API_KEY.isEmpty()) {
+            Dialog.show("Error", "No API key provided", "OK", null);
+        }
         UIManager.initFirstTheme("/theme");
-
-        // 1) On startup, check whether the user is logged in
-        if(!"true".equals(Preferences.get("isLoggedIn", "false"))) {
+        if (!"true".equals(Preferences.get("isLoggedIn", "false"))) {
             showLoginForm();
         } else {
             showMainTabbedForm();
@@ -23,17 +40,17 @@ public class HabtApp extends Lifecycle {
     }
 
     /**
-     * Builds and displays a simple login form.
-     * Adapts to our own backend authentication logic as needed.
+     * Displays the login form with “Log In” and “Register” buttons.
+     * Uses Firebase’s signInWithPassword for existing users.
      */
     private void showLoginForm() {
         Form login = new Form("Log In", BoxLayout.y());
         login.setUIID("LoginForm");
 
-        TextField usernameField = new TextField("", "Username", 20, TextField.ANY);
-        usernameField.setUIID("LoginField");
-        login.add(new Label("Username:"));
-        login.add(usernameField);
+        TextField emailField = new TextField("", "Email", 20, TextField.EMAILADDR);
+        emailField.setUIID("LoginField");
+        login.add(new Label("Email:"));
+        login.add(emailField);
 
         TextField passwordField = new TextField("", "Password", 20, TextField.PASSWORD);
         passwordField.setUIID("LoginField");
@@ -44,57 +61,314 @@ public class HabtApp extends Lifecycle {
         errorLabel.setUIID("ErrorLabel");
         login.add(errorLabel);
 
+        Container buttonContainer = new Container(new FlowLayout(Component.CENTER));
         Button btnLogin = new Button("Log In");
         btnLogin.setUIID("LoginButton");
-        login.add(btnLogin);
+        buttonContainer.add(btnLogin);
 
+        Button btnRegister = new Button("Register");
+        btnRegister.setUIID("RegisterButton");
+        buttonContainer.add(btnRegister);
+
+        login.add(buttonContainer);
+
+        // Log In listener (uses signInWithPassword)
         btnLogin.addActionListener(evt -> {
-            String user = usernameField.getText().trim();
-            String pass = passwordField.getText().trim();
+            String email = emailField.getText().trim();
+            String pass  = passwordField.getText().trim();
 
-            // Replace this with your real validation!!!
-            if(user.isEmpty() || pass.isEmpty()) {
-                errorLabel.setText("Please enter both username & password.");
+            if (email.isEmpty() || pass.isEmpty()) {
+                errorLabel.setText("Email and password cannot be empty.");
                 login.revalidate();
                 return;
             }
 
-            // Assume login success:
-            Preferences.set("isLoggedIn", "true");
-            Preferences.set("username", user);
+            String payload = "{"
+                    + "\"email\":\"" + email + "\","
+                    + "\"password\":\"" + pass + "\","
+                    + "\"returnSecureToken\":true"
+                    + "}";
 
-            // Proceed to the main form:
-            showMainTabbedForm();
+            ConnectionRequest req = new ConnectionRequest() {
+                @Override
+                protected void postResponse() {
+                    int code = getResponseCode();
+                    byte[] data = getResponseData();
+                    String raw;
+                    try {
+                        raw = (data == null ? "" : new String(data, "UTF-8"));
+                    } catch (Exception e) {
+                        raw = "";
+                    }
+
+                    if (code != 200) {
+                        if (raw.trim().startsWith("{")) {
+                            try {
+                                JSONParser parser = new JSONParser();
+                                @SuppressWarnings("unchecked")
+                                Map<String, Object> errResult = parser.parseJSON(
+                                        new InputStreamReader(
+                                                new ByteArrayInputStream(data), "UTF-8"
+                                        )
+                                );
+                                if (errResult.containsKey("error")) {
+                                    @SuppressWarnings("unchecked")
+                                    Map<String, Object> errObj =
+                                            (Map<String, Object>) errResult.get("error");
+                                    String message = (String) errObj.get("message");
+                                    errorLabel.setText("Error: " + message);
+                                } else {
+                                    errorLabel.setText("HTTP " + code + ": unexpected response.");
+                                }
+                            } catch (Exception ex) {
+                                errorLabel.setText("Parse error: " + ex.getMessage());
+                            }
+                        } else {
+                            errorLabel.setText("HTTP " + code + " — check network/endpoint.");
+                        }
+                        login.revalidate();
+                        return;
+                    }
+
+                    if (raw.trim().isEmpty() || !raw.trim().startsWith("{")) {
+                        errorLabel.setText("Expected JSON but got: " + raw);
+                        login.revalidate();
+                        return;
+                    }
+
+                    try {
+                        JSONParser parser = new JSONParser();
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> result = parser.parseJSON(
+                                new InputStreamReader(
+                                        new ByteArrayInputStream(data), "UTF-8"
+                                )
+                        );
+                        if (result.containsKey("idToken")) {
+                            String idToken = (String) result.get("idToken");
+                            String localId = (String) result.get("localId");
+
+                            Preferences.set("firebaseIdToken", idToken);
+                            Preferences.set("firebaseLocalId", localId);
+                            Preferences.set("isLoggedIn", "true");
+                            Preferences.set("username", email);
+
+                            showMainTabbedForm();
+                        } else {
+                            errorLabel.setText("Login succeeded but no idToken found.");
+                            login.revalidate();
+                        }
+                    } catch (Exception ex) {
+                        errorLabel.setText("Parse error: " + ex.getMessage());
+                        login.revalidate();
+                    }
+                }
+
+                @Override
+                protected void handleErrorResponseCode(int code, String message) {
+                    errorLabel.setText("HTTP error: " + code);
+                    login.revalidate();
+                }
+            };
+
+            String signInUrl =
+                    "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key="
+                            + FIREBASE_API_KEY;
+            req.setUrl(signInUrl);
+            req.setPost(true);
+            req.setContentType("application/json");
+            req.setRequestBody(payload);
+            req.setFailSilently(false);
+            NetworkManager.getInstance().addToQueue(req);
         });
+
+        // “Register” opens registration form
+        btnRegister.addActionListener(evt -> showRegisterForm());
 
         login.show();
     }
 
     /**
-     * Constructs our main “Tabbed” UI with Account, Home, and Calendar tabs.
+     * Registration form: collects name, DOB, email, password.
+     * Calls signUp, stores name + DOB in Preferences, then proceeds.
+     */
+    private void showRegisterForm() {
+        Form register = new Form("Register", BoxLayout.y());
+        register.setUIID("RegisterForm");
+
+        TextField nameField = new TextField("", "Full Name", 30, TextField.ANY);
+        nameField.setUIID("RegField");
+        register.add(new Label("Name:")).setUIID("RegLabel");
+        register.add(nameField);
+
+        TextField dobField = new TextField("", "YYYY-MM-DD", 10, TextField.NUMERIC);
+        dobField.setUIID("RegField");
+        register.add(new Label("Date of Birth:")).setUIID("RegLabel");
+        register.add(dobField);
+
+        TextField emailField = new TextField("", "Email", 20, TextField.EMAILADDR);
+        emailField.setUIID("RegField");
+        register.add(new Label("Email:")).setUIID("RegLabel");
+        register.add(emailField);
+
+        TextField passwordField = new TextField("", "Password", 20, TextField.PASSWORD);
+        passwordField.setUIID("RegField");
+        register.add(new Label("Password:")).setUIID("RegLabel");
+        register.add(passwordField);
+
+        Label errorLabel = new Label("");
+        errorLabel.setUIID("ErrorLabel");
+        register.add(errorLabel);
+
+        Button btnSubmit = new Button("Submit");
+        btnSubmit.setUIID("RegisterButton");
+        register.add(btnSubmit);
+
+        Button btnBack = new Button("Back to Log In");
+        btnBack.setUIID("LoginButton");
+        register.add(btnBack);
+
+        btnSubmit.addActionListener(evt -> {
+            String fullName = nameField.getText().trim();
+            String dob      = dobField.getText().trim();
+            String email    = emailField.getText().trim();
+            String pass     = passwordField.getText().trim();
+
+            if (fullName.isEmpty() || dob.isEmpty() || email.isEmpty() || pass.isEmpty()) {
+                errorLabel.setText("All fields are required.");
+                register.revalidate();
+                return;
+            }
+
+            String payload = "{"
+                    + "\"email\":\"" + email + "\","
+                    + "\"password\":\"" + pass + "\","
+                    + "\"returnSecureToken\":true"
+                    + "}";
+
+            ConnectionRequest req = new ConnectionRequest() {
+                @Override
+                protected void postResponse() {
+                    int code = getResponseCode();
+                    byte[] data = getResponseData();
+                    String raw;
+                    try {
+                        raw = (data == null ? "" : new String(data, "UTF-8"));
+                    } catch (Exception e) {
+                        raw = "";
+                    }
+
+                    if (code != 200) {
+                        if (raw.trim().startsWith("{")) {
+                            try {
+                                JSONParser parser = new JSONParser();
+                                @SuppressWarnings("unchecked")
+                                Map<String, Object> errResult = parser.parseJSON(
+                                        new InputStreamReader(
+                                                new ByteArrayInputStream(data), "UTF-8"
+                                        )
+                                );
+                                if (errResult.containsKey("error")) {
+                                    @SuppressWarnings("unchecked")
+                                    Map<String, Object> errObj =
+                                            (Map<String, Object>) errResult.get("error");
+                                    String message = (String) errObj.get("message");
+                                    errorLabel.setText("Error: " + message);
+                                } else {
+                                    errorLabel.setText("HTTP " + code + ": unexpected response.");
+                                }
+                            } catch (Exception ex) {
+                                errorLabel.setText("Parse error: " + ex.getMessage());
+                            }
+                        } else {
+                            errorLabel.setText("HTTP " + code + " — check network/endpoint.");
+                        }
+                        register.revalidate();
+                        return;
+                    }
+
+                    if (raw.trim().isEmpty() || !raw.trim().startsWith("{")) {
+                        errorLabel.setText("Expected JSON but got: " + raw);
+                        register.revalidate();
+                        return;
+                    }
+
+                    try {
+                        JSONParser parser = new JSONParser();
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> result = parser.parseJSON(
+                                new InputStreamReader(
+                                        new ByteArrayInputStream(data), "UTF-8"
+                                )
+                        );
+                        if (result.containsKey("idToken")) {
+                            String idToken = (String) result.get("idToken");
+                            String localId = (String) result.get("localId");
+
+                            // Save to Preferences
+                            Preferences.set("firebaseIdToken", idToken);
+                            Preferences.set("firebaseLocalId", localId);
+                            Preferences.set("isLoggedIn", "true");
+                            Preferences.set("username", email);
+
+                            // Store fullName + dob
+                            Preferences.set("fullName", fullName);
+                            Preferences.set("dateOfBirth", dob);
+
+                            showMainTabbedForm();
+                        } else {
+                            errorLabel.setText("Registration succeeded but no idToken found.");
+                            register.revalidate();
+                        }
+                    } catch (Exception ex) {
+                        errorLabel.setText("Parse error (success JSON): " + ex.getMessage());
+                        register.revalidate();
+                    }
+                }
+
+                @Override
+                protected void handleErrorResponseCode(int code, String message) {
+                    errorLabel.setText("HTTP error: " + code);
+                    register.revalidate();
+                }
+            };
+
+            String signUpUrl = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key="
+                    + FIREBASE_API_KEY;
+            req.setUrl(signUpUrl);
+            req.setPost(true);
+            req.setContentType("application/json");
+            req.setRequestBody(payload);
+            req.setFailSilently(false);
+            NetworkManager.getInstance().addToQueue(req);
+        });
+
+        btnBack.addActionListener(evt -> showLoginForm());
+        register.show();
+    }
+
+    /**
+     * Builds the main tabbed UI: Account, Home, Calendar.
+     * The Account tab now displays the user’s stored full name (if available).
      */
     private void showMainTabbedForm() {
         Form hi = new Form("HABT", new BorderLayout());
         Tabs tabs = new Tabs();
 
-        // ACCOUNT TAB (with real Log Out)
         tabs.addTab("Account", accountPage(tabs, hi));
 
-        // HOME TAB (quote + day counter)
         Container homeTab = new Container(BoxLayout.y());
         homeTab.setScrollableY(true);
-        homeTab.add( quoteOfDay() );
-        homeTab.add( getDaySinceRegistrationLabel() );
+        homeTab.add(quoteOfDay());
+        homeTab.add(getDaySinceRegistrationLabel());
         tabs.addTab("Home", homeTab);
 
-        // CALENDAR TAB (placeholder)
         Container calendarTab = new Container(BoxLayout.y());
-        calendarTab.add( new Label("Calendar View Coming Soon") );
+        calendarTab.add(new Label("Calendar View Coming Soon"));
         tabs.addTab("Calendar", calendarTab);
 
         hi.add(BorderLayout.CENTER, tabs);
 
-        // Side menu entries to switch between tabs
         hi.getToolbar().addMaterialCommandToSideMenu(
                 "Home", FontImage.MATERIAL_CHECK, 4,
                 e -> tabs.setSelectedIndex(1, true)
@@ -108,17 +382,28 @@ public class HabtApp extends Lifecycle {
     }
 
     /**
-     * Returns a Container for the Account tab, including a working “Log Out” button.
+     * Returns the Account tab’s container. Displays the user’s full name if stored;
+     * otherwise falls back to username (their email).
      */
     private Container accountPage(Tabs tabs, Form hiForm) {
         Container accountCnt = new Container(BoxLayout.y());
         accountCnt.setScrollableY(true);
 
-        // Greet the user by name (pulled from Preferences)
-        String user = Preferences.get("username", "User");
-        Label title = new Label("Welcome, " + user + "!");
+        String fullName = Preferences.get("fullName", null);
+        String displayName = (fullName != null)
+                ? fullName
+                : Preferences.get("username", "User");
+
+        Label title = new Label("Welcome, " + displayName + "!");
         title.setUIID("Title");
         accountCnt.add(title);
+
+        String dob = Preferences.get("dateOfBirth", null);
+        if (dob != null) {
+            Label dobLabel = new Label("Date of Birth: " + dob);
+            dobLabel.setUIID("AccountInfo");
+            accountCnt.add(dobLabel);
+        }
 
         SpanLabel info = new SpanLabel(
                 "This is your account page.\n\n"
@@ -130,21 +415,16 @@ public class HabtApp extends Lifecycle {
         info.setUIID("AccountInfo");
         accountCnt.add(info);
 
-        // Real Log Out button:
         Button btnLogout = new Button("Log Out");
         btnLogout.setUIID("LogoutButton");
         accountCnt.add(btnLogout);
 
         btnLogout.addActionListener(evt -> {
-            // 1) Remove any stored login flags/credentials
             Preferences.delete("isLoggedIn");
             Preferences.delete("username");
-            // If you have more keys for auth tokens, delete those too.
-
-            // 2) Show a confirmation (optional)
+            Preferences.delete("fullName");
+            Preferences.delete("dateOfBirth");
             Dialog.show("Logged out", "You have been logged out.", "OK", null);
-
-            // 3) Go back to the login screen
             showLoginForm();
         });
 
@@ -180,12 +460,11 @@ public class HabtApp extends Lifecycle {
         Container quoteContainer = new Container(new FlowLayout(Component.CENTER));
         quoteContainer.setUIID("QuoteContainer");
         quoteContainer.add(quoteLabel);
-
         return quoteContainer;
     }
 
     /**
-     * Returns a Container showing how many days since registration.
+     * Returns a Container showing how many days have passed since “registrationDate.”
      */
     private Container getDaySinceRegistrationLabel() {
         String stored = Preferences.get("registrationDate", null);

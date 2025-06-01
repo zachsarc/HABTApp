@@ -11,6 +11,14 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
+    <!-- Add explicit properties to ensure Java 8 compliance -->
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
     <!-- Add your cn1lib dependencies to this section -->
     <dependencies>
         <dependency>
@@ -28,43 +36,43 @@
         <!-- A profile to install Codename One support libraries to your home directory
             if they aren't installed yet. -->
         <profile>
-        <id>install-codenameone</id>
-        <activation><file><missing>${user.home}/.codenameone/guibuilder.jar</missing></file></activation>
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-antrun-plugin</artifactId>
+            <id>install-codenameone</id>
+            <activation><file><missing>${user.home}/.codenameone/guibuilder.jar</missing></file></activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
 
-                    <executions>
-                        <execution>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>run</goal>
-                            </goals>
-                            <configuration>
+                                    <target name="install-cn1">
+                                        <available file="${user.home}/.codenameone/guibuilder.jar" property="codenameone.present"/>
 
-                                <target name="install-cn1">
-                                    <available file="${user.home}/.codenameone/guibuilder.jar" property="codenameone.present"/>
+                                        <mkdir dir="${user.home}/.codenameone"/>
+                                        <mkdir dir="${project.build.directory}/codenameone/tmpProject"/>
+                                        <get src="https://www.codenameone.com/files/updates/UpdateCodenameOne.jar"
+                                             dest="${user.home}/UpdateCodenameOne.jar"
+                                             skipexisting="true"/>
+                                        <java jar="${user.home}/UpdateCodenameOne.jar" fork="true">
+                                            <arg value="${project.build.directory}/codenameone/tmpProject"/>
+                                            <arg value="force"/>
+                                        </java>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
 
-                                    <mkdir dir="${user.home}/.codenameone"/>
-                                    <mkdir dir="${project.build.directory}/codenameone/tmpProject"/>
-                                    <get src="https://www.codenameone.com/files/updates/UpdateCodenameOne.jar"
-                                         dest="${user.home}/UpdateCodenameOne.jar"
-                                         skipexisting="true"/>
-                                    <java jar="${user.home}/UpdateCodenameOne.jar" fork="true">
-                                        <arg value="${project.build.directory}/codenameone/tmpProject"/>
-                                        <arg value="force"/>
-                                    </java>
-                                </target>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </build>
-
-    </profile>
+        </profile>
         <!-- A profile to add kotlin support.  Activated if the src/main/kotlin
             directory exists -->
         <profile>
@@ -85,7 +93,7 @@
                     <artifactId>kotlin-stdlib</artifactId>
                     <version>${kotlin.version}</version>
                 </dependency>
-        
+
                 <!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-annotations-jvm -->
                 <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
                 <dependency>
@@ -142,8 +150,8 @@
                             </execution>
                             <execution>
                                 <id>test-compile</id>
-                                <goals> 
-                                    <goal>test-compile</goal> 
+                                <goals>
+                                    <goal>test-compile</goal>
                                 </goals>
                                 <configuration>
                                     <sourceDirs>
@@ -161,10 +169,10 @@
                 </plugins>
             </build>
         </profile>
-        
+
 
         <profile>
-            
+
             <id>javase</id>
             <activation>
                 <property>
@@ -180,6 +188,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.1.0</version>
                         <configuration>
                             <executable>java</executable>
                             <longClasspath>true</longClasspath>
@@ -198,19 +207,19 @@
             </build>
         </profile>
         <profile>
-            <!-- 
+            <!--
                 For running in simulator in process use:
                 mvn cn1:java -P simulator
-                            
+
                 Fro running in simulator in forked process use:
                 mvn cn1:simulator -P simulator
             -->
-                
+
             <id>simulator</id>
             <properties>
                 <codename1.targetPlatform>javase</codename1.targetPlatform>
             </properties>
-            
+
         </profile>
         <profile>
             <!--
@@ -221,7 +230,7 @@
             <properties>
                 <!-- Build server target type -->
                 <codename1.targetType>iphone</codename1.targetType>
-                
+
                 <!-- Used for identifying native interfaces.  Should match correct subdirectory of native -->
                 <codename1.targetPlatform>ios</codename1.targetPlatform>
             </properties>
@@ -236,7 +245,7 @@
                 <!-- Build server target type -->
                 <codename1.targetType>iphone</codename1.targetType>
                 <codename1.production>true</codename1.production>
-                
+
                 <!-- Used for identifying native interfaces.  Should match correct subdirectory of native -->
                 <codename1.targetPlatform>ios</codename1.targetPlatform>
                 <codename1.appStoreBuild>true</codename1.appStoreBuild>
@@ -304,9 +313,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>
@@ -331,7 +342,6 @@
             <plugin>
                 <groupId>com.codenameone</groupId>
                 <artifactId>codenameone-maven-plugin</artifactId>
-
                 <executions>
                     <execution>
                         <id>generate-gui-sources</id>
@@ -366,5 +376,5 @@
 
     </build>
 
-    
+
 </project>

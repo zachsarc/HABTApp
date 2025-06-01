@@ -31,3 +31,6 @@ Thumbs.db
 
 # Package-locks and metadata
 node_modules/
+/codenameone_settings.properties
+/firebase.properties
+

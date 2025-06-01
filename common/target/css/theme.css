@@ -1,112 +1,338 @@
 
 /* /Users/goonsgrave/IdeaProjects/HABTApp/common/src/main/css/theme.css */
-/* ------------------------------------------------------------
-   theme.css for HabtApp
-   Place this file under src/theme/ (or the folder where
-   your “/theme” resources live). Then call
-       UIManager.initFirstTheme("/theme");
-   in runApp() to load these styles.
-   ------------------------------------------------------------ */
+/* CodeName One Compatible HABT App Theme */
 
-/* Styles the Login form itself */
+/* Global Form Styles */
+Form {
+    background-color: #0a0a0a;
+    color: #ffffff;
+}
+
+/* Login Form */
 LoginForm {
-    background-color: #f5f5f5;
+    background-color: #1a1a2e;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #3a3a5c;
 }
 
-/* Text fields on the login screen */
+/* Register Form */
+RegisterForm {
+    background-color: #2e1a1a;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #5c3a3a;
+}
+
+/* Input Fields */
 LoginField {
-    margin: 5mm 5mm 5mm 5mm;
-    padding: 2mm;
-    border-radius: 5mm;
-    border: 1px solid #CCCCCC;
-    background-color: #FFFFFF;
-    color: #333333;
-    font-size: 4mm;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 15px;
+    color: #ffffff;
+    font-size: 16px;
+    margin: 8px;
 }
 
-/* Error label (in red) */
-ErrorLabel {
-    color: #D32F2F;
-    margin: 2mm 0mm 2mm 0mm;
-    font-style: italic;
-    font-size: 3.5mm;
+RegField {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 15px;
+    color: #ffffff;
+    font-size: 16px;
+    margin: 8px;
 }
 
-/* Login button */
+/* Labels */
+RegLabel {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 14px;
+    margin: 15px 0px 5px 0px;
+}
+
+/* Primary Buttons */
 LoginButton {
-    background-color: #007AFF;
-    color: #FFFFFF;
-    font-size: 5mm;
-    border-radius: 3mm;
-    margin: 5mm 10mm 5mm 10mm;
-    padding: 3mm 5mm;
+    background-color: #6366f1;
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 10px;
 }
 
-/* Title on the Account page */
-Title {
-    font-size: 6mm;
-    color: #333333;
-    margin: 5mm 0mm 5mm 0mm;
-    alignment: center;
+RegisterButton {
+    background-color: #8b5cf6;
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 10px;
 }
 
-/* SpanLabel on the Account page */
-AccountInfo {
-    font-size: 4mm;
-    color: #555555;
-    margin: 4mm 2mm 4mm 2mm;
-    line-spacing: 2mm;
-}
-
-/* Log Out button */
+/* Logout Button */
 LogoutButton {
-    background-color: #FF3B30;
-    color: #FFFFFF;
-    font-size: 5mm;
-    border-radius: 3mm;
-    margin: 5mm 10mm 5mm 10mm;
-    padding: 3mm 5mm;
+    background-color: #ef4444;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 14px;
+    margin: 20px;
 }
 
-/* Quote of the Day label text */
-QuoteLabel {
-    font-style: italic;
-    font-size: 4mm;
-    color: #444444;
+/* Error Labels */
+ErrorLabel {
+    color: #ef4444;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 10px;
+    padding: 10px;
+    background-color: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    border-radius: 8px;
 }
 
-/* Ensures quote text is centered */
-CenterLabel {
-    alignment: center;
+/* Title Styles */
+Title {
+    color: #6366f1;
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px;
 }
 
-/* Container around the quote (gives a light background) */
+/* Account Info */
+AccountInfo {
+    color: #a1a1aa;
+    font-size: 16px;
+    margin: 15px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+/* Quote Container */
 QuoteContainer {
-    padding: 3mm;
-    margin: 4mm 4mm 4mm 4mm;
-    background-color: #E0F7FA;
-    border-radius: 4mm;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px;
+    border: 1px solid #333;
 }
 
-/* “Day X” label styling */
+/* Quote Label */
+QuoteLabel {
+    color: #ffffff;
+    font-size: 18px;
+    text-align: center;
+    font-style: italic;
+    line-height: 1.5;
+}
+
+/* Center Label */
+CenterLabel {
+    text-align: center;
+}
+
+/* Day Label */
 DayLabel {
-    font-size: 5mm;
-    color: #00695C;
-    margin: 4mm 0mm 4mm 0mm;
-    alignment: center;
+    color: #10b981;
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px;
 }
 
-/* (Optional) You can style the Tabs titles here */
+/* Tab Styles */
 Tabs {
-    padding: 2mm 0mm 2mm 0mm;
-    background-color: #FFFFFF;
+    background-color: #1a1a1a;
+    border-radius: 20px;
 }
 
-/* Style for each Tab’s title when selected/unselected */
-TabsTab {
-    color: #888888;
-    font-size: 4mm;
-    padding: 2mm 4mm;
+TabSelected {
+    background-color: #6366f1;
+    color: #ffffff;
+    border-radius: 12px;
+    font-weight: bold;
+    padding: 15px;
 }
 
+Tab {
+    background-color: transparent;
+    color: #a1a1aa;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+/* Container Styles */
+Container {
+    background-color: transparent;
+}
+
+/* Labels */
+Label {
+    color: #a1a1aa;
+    font-size: 14px;
+    margin: 5px;
+}
+
+/* Button Pressed States */
+LoginButton.pressed {
+    background-color: #4f46e5;
+}
+
+RegisterButton.pressed {
+    background-color: #7c3aed;
+}
+
+LogoutButton.pressed {
+    background-color: #dc2626;
+}
+
+/* Focus States for Input Fields */
+LoginField.focused {
+    border-color: #6366f1;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+RegField.focused {
+    border-color: #6366f1;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Selected Tab Hover */
+Tab.selected {
+    background-color: #6366f1;
+    color: #ffffff;
+}
+
+/* Form Background Gradients (using solid colors as fallback) */
+LoginForm.gradient {
+    background-color: #667eea;
+}
+
+RegisterForm.gradient {
+    background-color: #f093fb;
+}
+
+/* Card Style Components */
+QuoteContainer.card {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #333;
+    margin: 16px;
+}
+
+AccountInfo.card {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #333;
+}
+
+/* Modern Styling for Specific Components */
+Title.modern {
+    color: #8b5cf6;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    margin: 24px;
+}
+
+DayLabel.accent {
+    color: #10b981;
+    font-size: 42px;
+    font-weight: bold;
+    text-align: center;
+    margin: 24px;
+    background-color: rgba(16, 185, 129, 0.1);
+    border-radius: 20px;
+    padding: 20px;
+}
+
+/* Enhanced Quote Styling */
+QuoteLabel.elegant {
+    color: #f8fafc;
+    font-size: 16px;
+    text-align: center;
+    font-style: italic;
+    line-height: 1.6;
+    padding: 10px;
+}
+
+/* Button Variants */
+LoginButton.primary {
+    background-color: #6366f1;
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    font-weight: bold;
+    margin: 8px;
+}
+
+RegisterButton.secondary {
+    background-color: #8b5cf6;
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    font-weight: bold;
+    margin: 8px;
+}
+
+LogoutButton.danger {
+    background-color: #ef4444;
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: bold;
+    margin: 12px;
+}
+
+/* Input Field Variants */
+LoginField.modern {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid #374151;
+    border-radius: 12px;
+    padding: 16px;
+    color: #ffffff;
+    font-size: 16px;
+    margin: 8px;
+}
+
+RegField.modern {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid #374151;
+    border-radius: 12px;
+    padding: 16px;
+    color: #ffffff;
+    font-size: 16px;
+    margin: 8px;
+}
+
+/* Themed Containers */
+Container.glassmorphism {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    margin: 10px;
+}
+
+Container.darkCard {
+    background-color: #1f2937;
+    border-radius: 12px;
+    border: 1px solid #374151;
+    padding: 16px;
+    margin: 8px;
+}
 /* end /Users/goonsgrave/IdeaProjects/HABTApp/common/src/main/css/theme.css*/

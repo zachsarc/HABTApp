@@ -11,7 +11,7 @@
   <version>1.0-SNAPSHOT</version>
 
   <name>habtapp-javase</name>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -74,7 +74,7 @@
       </dependency>
 
   </dependencies>
-  
+
   <profiles>
       <!-- Profile for generating executable jar.  -->
       <profile>
@@ -327,7 +327,7 @@
                       <artifactId>codenameone-maven-plugin</artifactId>
 
                       <executions>
-                    
+
                           <execution>
                               <id>cn1-tests</id>
                               <phase>test</phase>
@@ -338,7 +338,7 @@
                       </executions>
 
                   </plugin>
-            
+
               </plugins>
           </build>
       </profile>
@@ -596,13 +596,13 @@
                           </execution>
                       </executions>
                   </plugin>
-              
+
                   <plugin>
                       <groupId>org.codehaus.mojo</groupId>
                       <artifactId>exec-maven-plugin</artifactId>
                       <configuration>
                           <workingDirectory>${basedir}/../common</workingDirectory>
-            
+
                           <executable>java</executable>
                           <longClasspath>true</longClasspath>
                           <arguments>
@@ -784,5 +784,5 @@
       </profile>
   </profiles>
 
-  
+
 </project>
